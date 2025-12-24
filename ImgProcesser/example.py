@@ -1,4 +1,4 @@
-from ImgProcess import Img
+from ImgProcesser.ImgProcesser import Img
 import cv2
 import matplotlib.pyplot as plt
 from tqdm import tqdm

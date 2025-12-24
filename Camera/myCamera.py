@@ -1,4 +1,4 @@
-from MvImport.MvCameraControl_class import *
+from .MvImport.MvCameraControl_class import *
 
 
 class Camera:
