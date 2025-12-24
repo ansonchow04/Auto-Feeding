@@ -8,6 +8,7 @@ PORT_device = '502'
 HOST_robot = '192.168.60.68'
 PORT_robot = '8080'
 
+# 
 device = device(HOST_device, PORT_device)
 # robot = RobotServer(HOST_robot, PORT_robot)
 
