@@ -33,6 +33,7 @@ class RobotServer:
         """打印所有坐标"""
         for i, coord in enumerate(self.coords):
             print(f"Coordinate {i}: {coord}")
+        print()
 
     def start(self):
         """开启服务器并等待连接"""

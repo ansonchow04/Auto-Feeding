@@ -5,6 +5,7 @@ from RobotServer.RobotServer import RobotServer
 
 import time
 import matplotlib.pyplot as plt
+import random
 
 HOST_device = '192.168.60.69'
 PORT_device = '502'
@@ -16,11 +17,17 @@ robot = RobotServer(host=HOST_robot, port=PORT_robot)
 robot.start()
 camera = Camera()
 
-img = Img(data=camera.capture())
-robot.coords_append(img.centroid(min_area=50000, draw=True))
+# img = Img(data=camera.capture())
+# robot.coords_append(img.centroid(min_area=50000, draw=True))
 
 while True:
     if len(robot.coords) < 3:
-        
-    robot.run_once()
-    time.sleep(0.1)
+        for i in range(10):
+            robot.coords_append([random.randint(0, 100), random.randint(0, 100), random.randint(-100, 0)])
+            # here, method should not be append, because after zhensan, coords before is not valid anymore
+            # the correct way is: clear -> append
+    
+    robot.coords_print()
+    print(robot.coords_pop())
+    # robot.run_once()
+    time.sleep(3)
