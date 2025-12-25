@@ -23,11 +23,11 @@ camera = Camera()
 while True:
     if len(robot.coords) < 3:
         for i in range(10):
-            robot.coords_append([random.randint(0, 100), random.randint(0, 100), random.randint(-100, 0)])
+            robot.coords_append([random.randint(0, 100), random.randint(0, 100), -100]) # const 100
             # here, method should not be append, because after zhensan, coords before is not valid anymore
             # the correct way is: clear -> append
     
-    robot.coords_print()
-    print(robot.coords_pop())
-    # robot.run_once()
-    time.sleep(3)
+    # robot.coords_print()
+    # print(robot.coords_pop())
+    robot.run_once()
+    time.sleep(0.1)
