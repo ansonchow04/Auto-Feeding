@@ -10,13 +10,15 @@ PORT_device = '502'
 HOST_robot = '192.168.60.1'
 PORT_robot = '8080'
 
-# device = device(host=HOST_device, port=PORT_device)
-# robot = RobotServer(host=HOST_robot, port=PORT_robot)
-# robot.start()
+ctrlboard = device(host=HOST_device, port=PORT_device)
+robot = RobotServer(host=HOST_robot, port=PORT_robot)
+robot.start()
 camera = Camera()
 camera.save(filename='test.bmp')
 
-# while True:
-#     robot.run_once()
-#     time.sleep(1)
+while True:
+    if len(robot.coords) < 3:
+        camera.save()
 
+    robot.run_once()
+    time.sleep(0.1)
