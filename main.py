@@ -4,6 +4,7 @@ from ImgProcesser.ImgProcesser import Img
 from RobotServer.RobotServer import RobotServer
 
 import time
+import matplotlib.pyplot as plt
 
 HOST_device = '192.168.60.69'
 PORT_device = '502'
@@ -14,11 +15,12 @@ ctrlboard = device(host=HOST_device, port=PORT_device)
 robot = RobotServer(host=HOST_robot, port=PORT_robot)
 robot.start()
 camera = Camera()
-camera.save(filename='test.bmp')
+
+img = Img(data=camera.capture())
+robot.coords_append(img.centroid(min_area=50000, draw=True))
 
 while True:
     if len(robot.coords) < 3:
-        camera.save()
-
+        
     robot.run_once()
     time.sleep(0.1)

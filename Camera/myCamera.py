@@ -1,4 +1,6 @@
 from .MvImport.MvCameraControl_class import *
+import numpy as np
+import cv2
 
 
 class Camera:
@@ -101,6 +103,72 @@ class Camera:
             raise RuntimeError(f"写入文件失败: {e}")
         
         return True
+    
+    def capture(self, timeout=2000):
+        """
+        捕获一帧图像并返回为numpy数组
+        
+        参数:
+            timeout: 超时时间(毫秒)，默认 2000
+            
+        返回:
+            numpy数组格式的BGR图像
+        """
+        if not self._initialized:
+            raise RuntimeError("相机未初始化")
+        
+        # 获取图像缓冲区大小
+        stParam = MVCC_INTVALUE()
+        ret = self.camera.MV_CC_GetIntValue("PayloadSize", stParam)
+        if ret != MV_OK:
+            raise RuntimeError(f"获取图像大小失败，错误码: {ret}")
+        
+        # 创建缓冲区并获取一帧图像
+        pData = (c_ubyte * stParam.nCurValue)()
+        stFrameInfo = MV_FRAME_OUT_INFO_EX()
+        
+        ret = self.camera.MV_CC_GetOneFrameTimeout(pData, stParam.nCurValue, stFrameInfo, timeout)
+        if ret != MV_OK:
+            raise RuntimeError(f"获取图像帧失败，错误码: {ret}")
+        
+        # 将原始数据转换为numpy数组
+        image_data = np.frombuffer(pData, dtype=np.uint8, count=stFrameInfo.nFrameLen)
+        
+        # 根据像素格式转换
+        if stFrameInfo.enPixelType == PixelType_Gvsp_Mono8:
+            # 单通道灰度图
+            image = image_data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth))
+            image = cv2.cvtColor(image, cv2.COLOR_GRAY2BGR)
+        elif stFrameInfo.enPixelType == PixelType_Gvsp_RGB8_Packed:
+            # RGB格式
+            image = image_data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth, 3))
+            image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+        elif stFrameInfo.enPixelType == PixelType_Gvsp_BGR8_Packed:
+            # BGR格式
+            image = image_data.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth, 3))
+        else:
+            # 其他格式需要转换，使用SDK转换为RGB
+            stConvertParam = MV_CC_PIXEL_CONVERT_PARAM()
+            stConvertParam.nWidth = stFrameInfo.nWidth
+            stConvertParam.nHeight = stFrameInfo.nHeight
+            stConvertParam.pSrcData = cast(pData, POINTER(c_ubyte))
+            stConvertParam.nSrcDataLen = stFrameInfo.nFrameLen
+            stConvertParam.enSrcPixelType = stFrameInfo.enPixelType
+            stConvertParam.enDstPixelType = PixelType_Gvsp_BGR8_Packed
+            
+            nConvertSize = stFrameInfo.nWidth * stFrameInfo.nHeight * 3
+            pConvertData = (c_ubyte * nConvertSize)()
+            stConvertParam.pDstBuffer = cast(pConvertData, POINTER(c_ubyte))
+            stConvertParam.nDstBufferSize = nConvertSize
+            
+            ret = self.camera.MV_CC_ConvertPixelType(stConvertParam)
+            if ret != MV_OK:
+                raise RuntimeError(f"像素格式转换失败，错误码: {ret}")
+            
+            image = np.frombuffer(pConvertData, dtype=np.uint8, count=nConvertSize)
+            image = image.reshape((stFrameInfo.nHeight, stFrameInfo.nWidth, 3))
+        
+        return image
     
     def close(self):
         """关闭相机并释放资源"""
