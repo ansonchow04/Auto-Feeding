@@ -309,6 +309,11 @@ class gate:
         command = f"00 00 00 00 00 06 02 06 00 B2 00 {delay_val:02X}"
         self._send(command)
 
+# 料仓门的输出端口用作控制直振平台继电器
+class hopper_relay(gate):
+    """直振平台继电器(复用 gate)"""
+    pass
+
 
 # 控制板，包含以上components
 class device:
@@ -324,6 +329,7 @@ class device:
         self.lightB = lightB(sender)
         self.hopper = hopper(sender)
         self.gate = gate(sender)
+        self.hopper_relay = hopper_relay(sender)
 
     def __enter__(self):
         if not self.connected:
