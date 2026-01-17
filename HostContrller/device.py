@@ -195,7 +195,7 @@ class lightA:
 
     # 亮度调节
     def adjust_brightness(self, level: int):
-        # 亮度，线性映射到寄存器允许的6~999范围
+        """亮度，线性映射到寄存器允许的6~999范围"""
         if not 6 <= level <= 999:
             print("Brightness level must be between 6 and 999.")
             return
@@ -225,6 +225,17 @@ class lightB:
 
     def close(self):
         self._send(self.CLOSE)
+    
+    # 亮度调节
+    def adjust_brightness(self, level: int):
+        """亮度，线性映射到寄存器允许的6~999范围"""
+        if not 6 <= level <= 999:
+            print("Brightness level must be between 6 and 999.")
+            return
+        high = (level >> 8) & 0xFF
+        low = level & 0xFF
+        command = f"00 00 00 00 00 06 02 06 00 51 {high:02X} {low:02X}"
+        self._send(command)
 
 
 # 料仓
@@ -274,8 +285,8 @@ class gate:
     def open(self):
         self._send(self.OPEN)
 
-    def close(self):
-        self._send(self.CLOSE)
+    # def close(self):
+    #     self._send(self.CLOSE)
 
     # 设置仓门开启时间
     def set_open_time(self, time_sec: float):

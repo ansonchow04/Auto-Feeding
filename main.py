@@ -12,15 +12,13 @@ PORT_device = '502'
 HOST_robot = '192.168.60.1'
 PORT_robot = '8080'
 
-if True:
+if False:
     ctrlboard = device(host=HOST_device, port=PORT_device)
-    ctrlboard.hopper_relay.set_open_time(2)
+    ctrlboard.hopper_relay.set_open_time(3)
     ctrlboard.hopper_relay.open()
-    # time.sleep(2)
-    # ctrlboard.hopper_relay.close()
     
 
-if False:
+if True:
     ctrlboard = device(host=HOST_device, port=PORT_device)
     robot = RobotServer(host=HOST_robot, port=PORT_robot)
     robot.start()
