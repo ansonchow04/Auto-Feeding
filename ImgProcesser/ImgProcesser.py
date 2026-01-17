@@ -145,6 +145,32 @@ class Img:
             self.data = vis
         return (cx, cy)
 
+    def multi_centroids(self, min_area=300, draw=True):
+        num_labels, labels, stats, centroids = cv2.connectedComponentsWithStats(
+            self.data, connectivity=8
+        )
+        coords = []
+        vis = cv2.cvtColor(self.data, cv2.COLOR_GRAY2BGR) if draw else self.data
+        for i in range(1, num_labels):
+            area = stats[i, cv2.CC_STAT_AREA]
+            if area < min_area:
+                continue
+            cx, cy = centroids[i]
+            cx, cy = int(cx), int(cy)
+            coords.append((cx, cy))
+            if draw:
+                cv2.drawMarker(
+                    vis,
+                    (cx, cy),
+                    (255, 0, 0),
+                    markerType=cv2.MARKER_TILTED_CROSS,
+                    markerSize=12,
+                    thickness=2
+                )
+        if draw:
+            self.data = vis
+        return coords
+
 if __name__ == "__main__":
     img = Img(path='datasetALL/1.bmp')
 

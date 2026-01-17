@@ -26,7 +26,7 @@ coords = list()
 #     plt.savefig(f'processed_image/processed_{i}{coords[-1]}.jpg', dpi=600)
 #     plt.close()
 
-img_path = f'ImgProcesser/ChenpiData/1.bmp'
+img_path = f'ImgProcesser/ChenpiData/tiled_image.png'
 img = Img(path=img_path)
 plt.figure()
 plt.subplot(1, 2, 1)
@@ -37,8 +37,10 @@ img.gray().\
     otsu(inverse=True).\
     open(ksize=3, shape="ellipse").\
     remove_small_objects(min_area=50000)
-coords.append(img.centroid(min_area=50000, draw=True))
+coords.append(img.multi_centroids(min_area=50000, draw=True))
 img.show(title="Processed")
 plt.tight_layout()
-plt.savefig(f'ImgProcesser/ChenpiData/processed_1.jpg', dpi=600)
+# plt.savefig(f'ImgProcesser/ChenpiData/processed_1.jpg', dpi=600)
+plt.show()
 plt.close()
+print(f"Centroid Coordinates: {coords}")

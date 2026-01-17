@@ -14,9 +14,10 @@ PORT_robot = '8080'
 
 if True:
     ctrlboard = device(host=HOST_device, port=PORT_device)
+    ctrlboard.hopper_relay.set_open_time(2)
     ctrlboard.hopper_relay.open()
-    time.sleep(2)
-    ctrlboard.hopper_relay.close()
+    # time.sleep(2)
+    # ctrlboard.hopper_relay.close()
     
 
 if False:
